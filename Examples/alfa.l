@@ -4,7 +4,7 @@
 
 long yylin = 1;
 long yycol = 1;
-
+int yy_morph_error = 0;
 %}
 %option noyywrap
 ESPACIO 		    [ \t]+
@@ -89,7 +89,7 @@ ERROR		        [a-zA-Z][a-zA-Z0-9]{99,}|.
 {TRUE}                  { yycol += yyleng; return TOK_TRUE; }                        
 {FALSE}                 { yycol += yyleng; return TOK_FALSE; }                  
 {IDENTIFICADOR}         { yycol += yyleng; return TOK_IDENTIFICADOR; }                                         
-{ERROR}                 { yycol += yyleng; return TOK_ERROR; }            
+{ERROR}                 {fprintf(stderr, "****Error en linea (Flex) %ld: \n", yylin); yycol += yyleng; yy_morph_error = 1; return  TOK_ERROR;}
 %%
  
 /*

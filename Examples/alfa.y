@@ -59,6 +59,8 @@ extern int yy_morph_error;
 %left TOK_AND TOK_OR
 %%
 
+programa: TOK_MAIN TOK_CORCHETEIZQUIERDO declaraciones funciones sentencias TOK_CORCHETEDERECHO {fprintf(out, ";R1:\t<programa> ::= main {<declaraciones> <funciones> <sentencias>}\n");}
+
 declaraciones: declaracion {fprintf(out, ";R2:\t<declaraciones> ::= <declaracion> <declaraciones>\n");}
              | declaracion declaraciones {fprintf(out, ";R3:\t<declaraciones> ::= <declaracion>\n");}
              ;
@@ -73,22 +75,22 @@ clase: clase_escalar {fprintf(out, ";R5:\t<clase> ::= <clase_escalar>\n");}
 clase_escalar: tipo {fprintf(out, ";R9:\t<clase_escalar> ::= <tipo>\n");}
              ;
 
-tipo: int {fprintf(out, ";R10:\t<tipo> ::= int\n");}
-    | boolean {fprintf(out, ";R11:\t<tipo> ::= boolean\n");}
+tipo: TOK_INT {fprintf(out, ";R10:\t<tipo> ::= int\n");}
+    | TOK_BOOLEAN {fprintf(out, ";R11:\t<tipo> ::= boolean\n");}
     ;
 
-clase_vector: array tipo [constante_entera] {fprintf(out, ";R15:\t<clase_vector> ::= array <tipo> [<constante_entera>]\n");}
+clase_vector: TOK_ARRAY tipo [constante_entera] {fprintf(out, ";R15:\t<clase_vector> ::= array <tipo> [<constante_entera>]\n");}
             ;
 
 identificadores: identificador {fprintf(out, ";R18:\t<identificadores> ::= <identificador>\n");}
                | identificador identificadores {fprintf(out, ";R19:\t<identificadores> ::= <identificador> <identificadores>\n");} 
                ;
 
-funciones: funcion funciones {fprintf(out, ";R20:\t<funciones> ::= <funcion> <funciones>\n");}
+funciones: TOK_FUNCTION funciones {fprintf(out, ";R20:\t<funciones> ::= <funcion> <funciones>\n");}
          |  {fprintf(out, ";R21:\t<funciones> ::=\n");}
          ;
 
-funcion: function tipo identificador ( parametros_funcion ) { declaracion_funcion sentencias } {fprintf(out, ";R22:\t<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> } \n");}
+funcion: TOK_FUNCTION tipo identificador TOK_PARENTESISDERECHO parametros_funcion TOK_PARENTESISDERECHO { declaracion_funcion sentencias } {fprintf(out, ";R22:\t<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> } \n");}
        ;
 
 parametros_funcion: parametro_funcion resto_parametros_funcion {fprintf(out, ";R23:\t<parametros_funcion> ::= <parametro_funcion> <resto_parametros_funcion>\n");}
@@ -130,39 +132,39 @@ asignacion: identificador TOK_ASIGNACION exp {fprintf(out, ";R43:\t<asignacion> 
 
 elemento_vector: identificador TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {fprintf(out, ";R48:\t<elemento_vector> = <identificador> [<exp>]\n");};
 
-condicional: if TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_CORCHETEIZQUIERDO sentencias TOK_CORCHETEDERECHO {fprintf(out, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n"} 
-           | if TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_CORCHETEIZQUIERDO sentencias TOK_CORCHETEDERECHO else TOK_CORCHETEIZQUIERDO sentencias TOK_CORCHETEDERECHO {fprintf(out, ";R51:\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n"}
+condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_CORCHETEIZQUIERDO sentencias TOK_CORCHETEDERECHO {fprintf(out, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");} 
+           | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_CORCHETEIZQUIERDO sentencias TOK_CORCHETEDERECHO TOK_ELSE TOK_CORCHETEIZQUIERDO sentencias TOK_CORCHETEDERECHO {fprintf(out, ";R51:\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");}
            ;
 
-bucle: while TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_CORCHETEIZQUIERDO sentencias TOK_CORCHETEDERECHO {fprintf(out, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");};
+bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_CORCHETEIZQUIERDO sentencias TOK_CORCHETEDERECHO {fprintf(out, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");};
 
-lectura: scanf identificador {fprintf(out, ";R54:\t<lectura> ::= scanf <identificador>\n");};
+lectura: TOK_SCANF identificador {fprintf(out, ";R54:\t<lectura> ::= scanf <identificador>\n");};
 
-escritura: printf exp {fprintf(out, ";R56:\t<escritura> ::= printf <exp>\n");};
+escritura: TOK_PRINTF exp {fprintf(out, ";R56:\t<escritura> ::= printf <exp>\n");};
 
-retorno_funcion: return exp {fprintf(out, ";R61:\t<retorno_funcion> ::= return <exp>\n");};
+retorno_funcion: TOK_RETURN exp {fprintf(out, ";R61:\t<retorno_funcion> ::= return <exp>\n");};
 
-exp: exp TOK_MAS exp       {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}  
+exp: exp TOK_MAS exp         {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}  
    | exp TOK_MENOS exp       {fprintf(out, ";R73:\t<exp> ::= <exp> - <exp>\n");} 
-   | exp TOK_DIVISION exp       {fprintf(out, ";R74:\t<exp> ::= <exp> / <exp>\n");}  
-   | exp TOK_ASTERISTICO exp       {fprintf(out, ";R75:\t<exp> ::= <exp> * <exp>\n");} 
-   | TOK_MENOS exp           {fprintf(out, ";R76:\t<exp> ::= - <exp>\n");}
-   | exp TOK_ANDp      {fprintf(out, ";R77:\t<exp> ::= <exp> && <exp>\n");} 
-   | exp TOK_OR exp      {fprintf(out, ";R78:\t<exp> ::= <exp> || <exp>\n");} 
-   | TOK_NOT <exp>   {fprintf(out, ";R79:\t<exp> ::= ! <exp>\n");}
+   | exp TOK_DIVISION exp    {fprintf(out, ";R74:\t<exp> ::= <exp> / <exp>\n");}  
+   | exp TOK_ASTERISCO exp {fprintf(out, ";R75:\t<exp> ::= <exp> * <exp>\n");} 
+   | TOK_MENOS exp   {fprintf(out, ";R76:\t<exp> ::= - <exp>\n");}
+   | exp TOK_AND     {fprintf(out, ";R77:\t<exp> ::= <exp> && <exp>\n");} 
+   | exp TOK_OR exp  {fprintf(out, ";R78:\t<exp> ::= <exp> || <exp>\n");} 
+   | TOK_NOT exp     {fprintf(out, ";R79:\t<exp> ::= ! <exp>\n");}
    | identificador   {fprintf(out, ";R80:\t<exp> ::= <identificador>\n");}
    | constante       {fprintf(out, ";R81:\t<exp> ::= <constante>\n");}
    | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO         {fprintf(out, ";R82:\t<exp> ::= ( <exp> )\n");}
    | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO {fprintf(out, ";R83:\t<exp> ::= ( <comparacion> )\n");}
    | elemento_vector {fprintf(out, ";R85:\t<exp> ::= <elemento_vector>\n");}
-   | identificador ( lista_expresiones ) {fprintf(out, ";R88:\t<exp> ::= <identificador> ( <lista_expresiones> )\n");}
+   | identificador TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO {fprintf(out, ";R88:\t<exp> ::= <identificador> ( <lista_expresiones> )\n");}
    ;
 
 lista_expresiones: exp	resto_lista_expresiones {fprintf(out, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");}
 	             | {fprintf(out, ";R90:\t<lista_expresiones> ::=\n");} 
                  ;	
                  
-resto_lista_expresiones: , exp resto_lista_expresiones {fprintf(out, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones>\n");}
+resto_lista_expresiones: TOK_COMA exp resto_lista_expresiones {fprintf(out, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones>\n");}
 	                   | {fprintf(out, ";R92:\t<resto_lista_expresiones> ::=\n");} 
                        ;
 
@@ -191,6 +193,8 @@ identificador: TOK_IDENTIFICADOR {fprintf(out, ";R104:\t<identificador> ::= TOK_
 
 void yyerror(const char * s) {
     if(!yy_morph_error) {
-        printf("****Error sintactico en linea: %ld\n", yylin);
+        printf("****Error sintactico en linea: %ld\n\t%s\n", yylin, s);
+    } else {
+        printf("****Error morfologico\n");
     }
 }

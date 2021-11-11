@@ -1,10 +1,5 @@
-all:
-	bison -d -y -v alfa.y
 
-clean:
-	rm -rf -rf prueba *.o lex.yy.c y.tab.h y.tab.c y.output
 
-# Su codigo:
 prueba: y.tab.o lex.yy.o prueba.o
 	gcc -o prueba y.tab.o lex.yy.o prueba.o
 
@@ -17,12 +12,14 @@ lex.yy.o: lex.yy.c
 y.tab.o: y.tab.c
 	gcc -ansi -pedantic -c -o y.tab.o y.tab.c
 
-y.tab.c: calc.y
-	bison -dyv calc.y
+y.tab.c: alfa.y
+	bison -dyv alfa.y
 
-y.tab.h: calc.y
-	bison -dyv calc.y
+y.tab.h: alfa.y
+	bison -dyv alfa.y
 
-lex.yy.c: calc.l y.tab.h
-	flex calc.l
+lex.yy.c: alfa.l y.tab.h
+	flex alfa.l
 
+clean:
+	rm -rf -rf prueba *.o lex.yy.c y.tab.h y.tab.c y.output
