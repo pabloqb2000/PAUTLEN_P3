@@ -1,5 +1,10 @@
+all:
+	bison -d -y -v alfa.y
 
+clean:
+	rm -rf -rf prueba *.o lex.yy.c y.tab.h y.tab.c y.output
 
+# Su codigo:
 prueba: y.tab.o lex.yy.o prueba.o
 	gcc -o prueba y.tab.o lex.yy.o prueba.o
 
@@ -21,5 +26,3 @@ y.tab.h: calc.y
 lex.yy.c: calc.l y.tab.h
 	flex calc.l
 
-clean:
-	rm -rf -rf prueba *.o lex.yy.c y.tab.h y.tab.c y.output
