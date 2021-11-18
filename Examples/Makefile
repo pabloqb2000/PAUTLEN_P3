@@ -1,10 +1,11 @@
+TEST_NUMBERS = 1 2 3
+MAIN = pruebaSintactico
 
+pruebaSintactico: y.tab.o lex.yy.o pruebaSintactico.o
+	gcc -o pruebaSintactico y.tab.o lex.yy.o pruebaSintactico.o
 
-prueba: y.tab.o lex.yy.o prueba.o
-	gcc -o prueba y.tab.o lex.yy.o prueba.o
-
-prueba.o: prueba.c
-	gcc -Wall -ansi -pedantic -c -o prueba.o prueba.c
+pruebaSintactico.o: pruebaSintactico.c
+	gcc -Wall -ansi -pedantic -c -o pruebaSintactico.o pruebaSintactico.c
 
 lex.yy.o: lex.yy.c
 	gcc -ansi -pedantic -c -o lex.yy.o lex.yy.c
@@ -22,4 +23,14 @@ lex.yy.c: alfa.l y.tab.h
 	flex alfa.l
 
 clean:
-	rm -rf -rf prueba *.o lex.yy.c y.tab.h y.tab.c y.output
+	rm -rf -rf pruebaSintactico *.o lex.yy.c y.tab.h y.tab.c y.output
+
+test: pruebaSintactico
+	@printf "\n"
+	@for number in $(TEST_NUMBERS) ; do \
+		printf "\n\nDirerencias $$number\n" ; \
+		./$(MAIN) entrada_sin_$$number.txt misalida_sin_$$number.txt; \
+		diff -B -b salida_sin_$$number.txt misalida_sin_$$number.txt; \
+	done
+	@printf "\n"
+

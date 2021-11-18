@@ -1,6 +1,0 @@
-// Programa que eleva un numero al cuadrado
-
-
-int main(){
-    int x = 1;
-}
