@@ -54,9 +54,11 @@ extern int yy_morph_error;
 
 %token TOK_ERROR 
 
+%left TOK_IGUAL TOK_DISTINTO TOK_MENORIGUAL TOK_MAYORIGUAL TOK_MENOR TOK_MAYOR
 %left TOK_MAS TOK_MENOS
-%left TOK_DIVISION TOK_ASTERISCO
+%left TOK_ASTERISCO TOK_DIVISION 
 %left TOK_AND TOK_OR
+%left TOK_NOT
 %%
 
 
@@ -157,7 +159,6 @@ exp: exp TOK_MAS exp         {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
    | constante       {fprintf(out, ";R81:\t<exp> ::= <constante>\n");}
    | comparacion     {fprintf(out, ";R83:\t<exp> ::= ( <comparacion> )\n");}
    | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO         {fprintf(out, ";R82:\t<exp> ::= ( <exp> )\n");}
-   | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO {fprintf(out, ";R83:\t<exp> ::= ( <comparacion> )\n");}
    | elemento_vector {fprintf(out, ";R85:\t<exp> ::= <elemento_vector>\n");}
    | identificador TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO {fprintf(out, ";R88:\t<exp> ::= <identificador> ( <lista_expresiones> )\n");}
    ;
